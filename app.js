@@ -166,15 +166,37 @@
     setTimeout(() => overlay.classList.add('hidden'), 800);
   }
 
+  async function fetchChatText() {
+    const partsSetting = env().CHAT_PARTS;
+    const parts = partsSetting
+      ? partsSetting.split(',').map((p) => p.trim()).filter(Boolean)
+      : [env().CHAT_FILE || 'chat.txt'];
+
+    const chunks = [];
+    for (const part of parts) {
+      const response = await fetch(part);
+      if (!response.ok) throw new Error(`Could not load ${part}.`);
+      const text = await response.text();
+      if (!text || text.trim().length < 20) {
+        throw new Error(`${part} is empty on the server — upload the chat part files from your PC.`);
+      }
+      chunks.push(text);
+    }
+
+    return chunks.join('\n');
+  }
+
   async function loadChat() {
-    const chatFile = env().CHAT_FILE || 'chat.txt';
     setLoaderProgress(28);
 
-    const response = await fetch(chatFile);
-    if (!response.ok) throw new Error(`Could not load ${chatFile}.`);
+    const text = await fetchChatText();
 
     setLoaderProgress(42);
-    state.chatData = WhatsAppParser.parse(await response.text());
+    if (!text || text.trim().length < 50) {
+      throw new Error('Chat file is empty on the server. Upload chat1.txt–chat4.txt from your PC.');
+    }
+
+    state.chatData = WhatsAppParser.parse(text);
 
     if (state.chatData.totalMessages === 0) {
       throw new Error('No messages found.');
