@@ -31,6 +31,7 @@
     siteReady: false,
     letterReady: false,
     controlsShown: false,
+    aiEnhanced: false,
   };
 
   const $ = (sel) => document.querySelector(sel);
@@ -44,6 +45,7 @@
 
     setupFilters();
     setupSearch();
+    setupGlobalSearch();
     setupPeekModal();
     setupScrollReveal();
     setupShowMore();
@@ -382,29 +384,37 @@
   }
 
   async function runAIAnalysis(force = true) {
-    const cached = !force && AIMemory.getCached(state.chatData);
-    if (cached?.length) {
-      applyAIResults(cached);
+    if (!AIMemory.getProvider()) {
+      showToast('Add GROQ_API_KEY to your env file to use AI enhance.');
       return;
     }
 
-    if (!AIMemory.getProvider()) return;
+    if (!force) {
+      const cached = AIMemory.getCached(state.chatData);
+      if (cached?.length) {
+        applyAIResults(cached, 'cache');
+        return;
+      }
+    }
 
     $('#aiLoading').classList.remove('hidden');
     $('#aiRetryBtn').classList.add('hidden');
 
     try {
-      const { results, source } = await AIMemory.analyzeMoments(state.chatData, state.moments);
-      if (source === 'groq' || source === 'cache') applyAIResults(results);
-    } catch {
-      showToast('AI enhancement skipped — your moments still look lovely ✨');
+      const { results, source } = await AIMemory.analyzeMoments(state.chatData, state.moments, { force });
+      if (source === 'groq' || source === 'cache') {
+        applyAIResults(results, source);
+        showToast(source === 'groq' ? '✨ Moments enhanced with AI!' : '✨ Loaded your saved AI moments');
+      }
+    } catch (err) {
+      showToast(err?.message || 'AI enhancement failed — try again in a minute');
       showAiRetryButton();
     } finally {
       $('#aiLoading').classList.add('hidden');
     }
   }
 
-  function applyAIResults(aiItems) {
+  function applyAIResults(aiItems, source = 'groq') {
     state.displayMoments = aiItems.map((r, i) => {
       const orig = state.moments[i] || state.moments.find((m) => m.type === r.category) || state.moments[0];
       return {
@@ -417,7 +427,9 @@
         enhanced: true,
       };
     });
-    $('#momentsSubtitle').textContent = '✨ Enhanced with AI — tap any card';
+    state.aiEnhanced = true;
+    $('#momentsSubtitle').textContent =
+      source === 'groq' ? '✨ Enhanced with AI — tap any card' : '✨ Enhanced moments — tap any card';
     renderFeatured(state.displayMoments);
     renderMemoryGrid();
     showAiRetryButton();
@@ -427,8 +439,66 @@
     const btn = $('#aiRetryBtn');
     if (!btn) return;
     btn.classList.remove('hidden');
-    btn.textContent = AIMemory.getProvider() ? '✨ Enhance with AI' : '✨ Enhance (add Groq key)';
+    if (!AIMemory.getProvider()) {
+      btn.textContent = '✨ Enhance (add Groq key)';
+    } else if (state.aiEnhanced) {
+      btn.textContent = '✨ Re-enhance with AI';
+    } else {
+      btn.textContent = '✨ Enhance with AI';
+    }
     btn.onclick = () => runAIAnalysis(true);
+  }
+
+  function setupGlobalSearch() {
+    let debounce;
+    $('#globalSearchInput').addEventListener('input', (e) => {
+      clearTimeout(debounce);
+      debounce = setTimeout(() => renderGlobalSearch(e.target.value.trim()), 220);
+    });
+  }
+
+  function renderGlobalSearch(query) {
+    const container = $('#searchResults');
+    if (!state.chatData?.messages?.length) {
+      container.innerHTML = '<p class="search-hint">Chat still loading…</p>';
+      return;
+    }
+
+    if (!query || query.length < 2) {
+      container.innerHTML = '<p class="search-hint">Type at least 2 characters to search your chat.</p>';
+      return;
+    }
+
+    const q = query.toLowerCase();
+    const hits = state.chatData.messages
+      .filter((m) => ContentFilter.isSafe(m.text) && m.text.toLowerCase().includes(q))
+      .slice(-60)
+      .reverse()
+      .slice(0, 25);
+
+    if (!hits.length) {
+      container.innerHTML = `<p class="search-hint">No messages found for “${escapeHtml(query)}”.</p>`;
+      return;
+    }
+
+    const senders = [...new Set(hits.map((m) => m.sender))];
+    const you = senders[0];
+
+    container.innerHTML = `
+      <p class="search-count">${hits.length} match${hits.length > 1 ? 'es' : ''}</p>
+      <div class="search-bubbles">
+        ${hits
+          .map((m) => {
+            const mine = m.sender === you;
+            return `
+            <div class="bubble-wrap ${mine ? 'mine' : 'theirs'}">
+              <span class="bubble-name">${escapeHtml(m.sender.split(' ')[0])}</span>
+              <div class="bubble">${escapeHtml(m.text)}</div>
+              <span class="bubble-time">${formatMsgDate(m.date)}</span>
+            </div>`;
+          })
+          .join('')}
+      </div>`;
   }
 
   function showResults() {
@@ -443,7 +513,7 @@
       $(sel).classList.add('hidden');
     });
     const map = {
-      results: ['#statsSection', '#featuredSection', '#momentsSection'],
+      results: ['#statsSection', '#searchSection', '#featuredSection', '#momentsSection'],
     };
     (map[mode] || []).forEach((sel) => {
       $(sel).classList.remove('hidden');
