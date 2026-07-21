@@ -167,7 +167,7 @@
   }
 
   async function loadChat() {
-    const chatFile = env().CHAT_FILE || '_chat.txt';
+    const chatFile = env().CHAT_FILE || 'chat.txt';
     setLoaderProgress(28);
 
     const response = await fetch(chatFile);
