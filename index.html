@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#fce4ec">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Our Story — Hasan & Lalarukh</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="intro-active">
+  <div class="glyph-field" id="glyphField" aria-hidden="true"></div>
+  <div class="floating-hearts" aria-hidden="true"></div>
+  <div class="sparkles" aria-hidden="true"></div>
+
+  <!-- Loader first, then love letter intro -->
+  <div class="loader-overlay" id="loaderOverlay">
+    <div class="loader-glyphs" id="loaderGlyphs" aria-hidden="true"></div>
+    <div class="loader-content">
+      <div class="loader-heart-wrap">
+        <div class="loader-ring"></div>
+        <div class="loader-ring loader-ring-2"></div>
+        <span class="loader-heart">💕</span>
+      </div>
+      <p class="loader-title">Hasan & Lalarukh</p>
+      <p class="loader-text" id="loadingText">Opening our memories...</p>
+      <div class="loader-bar"><div class="loader-bar-fill" id="loaderBar"></div></div>
+    </div>
+  </div>
+
+  <!-- Love letter intro — every reload -->
+  <div class="letter-intro hidden" id="letterIntro">
+    <div class="letter-intro-glyphs" aria-hidden="true"></div>
+    <div class="letter-scene" id="letterScene">
+      <div class="envelope" id="envelope">
+        <div class="envelope-back"></div>
+        <article class="envelope-letter" id="letterPaper">
+          <div class="letter-paper-inner">
+            <p class="letter-to" id="letterTo">To my Lalarukh Rehan,</p>
+            <div class="letter-body" id="letterBody">
+              <p class="letter-loading">Writing your letter...</p>
+            </div>
+            <p class="letter-sign">Forever yours,<br><strong>Hasan</strong></p>
+            <p class="letter-stamp">💍 July 22, 2022</p>
+          </div>
+          <div class="letter-actions" id="letterActions">
+            <p class="letter-hint" id="letterHint">Take a moment… read every word ♥</p>
+            <button class="btn btn-primary letter-btn" id="letterContinue">Open our memories →</button>
+          </div>
+        </article>
+        <div class="envelope-front"></div>
+        <div class="envelope-flap" id="envelopeFlap"></div>
+        <span class="envelope-seal">💕</span>
+      </div>
+    </div>
+  </div>
+
+  <header class="hero animate-in">
+    <div class="hero-content">
+      <p class="hero-tag animate-item">Married · July 22, 2022</p>
+      <h1 class="animate-item">Hasan & Lalarukh</h1>
+      <p class="hero-sub animate-item">Every laugh, every make-up, every forever — in one little love book.</p>
+      <div class="anniversary-counter animate-item pulse-glow">
+        <span class="counter-number" id="daysTogether">—</span>
+        <span class="counter-label">days together</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="stats-grid hidden" id="statsSection">
+      <div class="stat-card reveal" data-stat="messages">
+        <span class="stat-icon">💬</span>
+        <span class="stat-value" id="statMessages">0</span>
+        <span class="stat-label">Messages</span>
+      </div>
+      <div class="stat-card reveal" data-stat="days">
+        <span class="stat-icon">📅</span>
+        <span class="stat-value" id="statDays">0</span>
+        <span class="stat-label">Days</span>
+      </div>
+      <div class="stat-card reveal" data-stat="love">
+        <span class="stat-icon">❤️</span>
+        <span class="stat-value" id="statLove">0</span>
+        <span class="stat-label">Love</span>
+      </div>
+      <div class="stat-card reveal" data-stat="years">
+        <span class="stat-icon">💍</span>
+        <span class="stat-value" id="statYears">—</span>
+        <span class="stat-label">Years</span>
+      </div>
+    </section>
+
+    <section class="featured-section hidden" id="featuredSection">
+      <article class="featured-card reveal" id="featuredCard"></article>
+    </section>
+
+    <section class="moments-section hidden" id="momentsSection">
+      <div class="section-head reveal">
+        <div>
+          <h2 class="section-title">Our Moments</h2>
+          <p class="section-sub" id="momentsSubtitle">Tap a card to peek inside</p>
+        </div>
+        <button class="btn btn-soft hidden" id="aiRetryBtn">✨ Enhance</button>
+      </div>
+
+      <div class="filter-scroll">
+        <div class="moments-filter" id="momentsFilter">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="love">💕</button>
+          <button class="filter-btn" data-filter="anniversary">💍</button>
+          <button class="filter-btn" data-filter="sweet">🌸</button>
+          <button class="filter-btn" data-filter="reconciliation">🤝</button>
+          <button class="filter-btn" data-filter="milestone">🎉</button>
+          <button class="filter-btn" data-filter="conflict">🌧️</button>
+        </div>
+      </div>
+
+      <div class="ai-loading hidden" id="aiLoading">
+        <div class="spinner spinner-sm"></div>
+        <p>Sprinkling a little magic...</p>
+      </div>
+
+      <div class="memory-grid" id="memoryGrid"></div>
+      <button class="btn btn-ghost hidden" id="showMoreBtn">Show more moments</button>
+    </section>
+  </main>
+
+  <footer class="animate-in">
+    <p>Forever & always · <span id="footerYear"></span></p>
+  </footer>
+
+  <!-- Peek modal — chat only when you tap a card -->
+  <div class="peek-modal hidden" id="peekModal" role="dialog" aria-modal="true">
+    <div class="peek-backdrop" id="peekBackdrop"></div>
+    <div class="peek-sheet">
+      <div class="peek-handle"></div>
+      <button class="peek-close" id="peekClose" aria-label="Close">×</button>
+      <div class="peek-header">
+        <span class="peek-badge" id="peekBadge"></span>
+        <h3 id="peekTitle"></h3>
+        <p class="peek-date" id="peekDate"></p>
+        <p class="peek-desc" id="peekDesc"></p>
+      </div>
+      <div class="peek-search">
+        <input type="search" id="searchInput" placeholder="Search this moment..." enterkeyhint="search">
+      </div>
+      <div class="peek-bubbles" id="peekBubbles"></div>
+    </div>
+  </div>
+
+  <script src="js/env.js"></script>
+  <script src="js/content-filter.js"></script>
+  <script src="js/parser.js"></script>
+  <script src="js/analyzer.js"></script>
+  <script src="js/letter.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
