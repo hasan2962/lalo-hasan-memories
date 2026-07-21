@@ -305,7 +305,31 @@ main {
 }
 .section-sub { font-size: 0.78rem; color: var(--text-soft); margin-top: 0.15rem; }
 
-/* Filters */
+/* Global chat search */
+.search-section {
+  padding: 0 1rem 1.25rem;
+  max-width: 520px;
+  margin: 0 auto;
+}
+.chat-search-wrap input {
+  width: 100%; min-height: var(--touch-min);
+  padding: 0.75rem 1rem; border-radius: var(--radius-sm);
+  border: 1px solid rgba(232, 160, 191, 0.45);
+  background: var(--white); font-family: var(--font-body); font-size: 0.9rem;
+}
+.chat-search-wrap input:focus {
+  outline: none; border-color: var(--rose);
+  box-shadow: 0 0 0 3px rgba(232, 160, 191, 0.2);
+}
+.search-results { margin-top: 0.85rem; }
+.search-hint, .search-count {
+  font-size: 0.82rem; color: var(--text-soft); margin-bottom: 0.65rem;
+}
+.search-bubbles {
+  display: flex; flex-direction: column; gap: 0.55rem;
+  max-height: 360px; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  padding-right: 0.15rem;
+}
 .filter-scroll {
   margin: 0 -1rem 1rem; padding: 0 1rem;
   overflow-x: auto; scrollbar-width: none;
