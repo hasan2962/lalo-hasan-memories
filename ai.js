@@ -146,9 +146,19 @@ ${sample}`;
     }));
   }
 
-  async function analyzeMoments(chatData, localMoments) {
-    const cached = getCached(chatData);
-    if (cached?.length) return { results: cached, source: 'cache' };
+  async function analyzeMoments(chatData, localMoments, options = {}) {
+    const { force = false } = options;
+
+    if (!force) {
+      const cached = getCached(chatData);
+      if (cached?.length) return { results: cached, source: 'cache' };
+    } else {
+      try {
+        localStorage.removeItem(CACHE_KEY);
+      } catch {
+        /* ignore */
+      }
+    }
 
     if (!getProvider()) {
       return { results: fromLocalMoments(localMoments), source: 'local' };
