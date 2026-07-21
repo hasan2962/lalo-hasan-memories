@@ -1,4 +1,4 @@
 AI_PROVIDER=groq
 GROQ_API_KEY=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
-CHAT_FILE=chat.txt
+CHAT_PARTS=chat1.txt,chat2.txt,chat3.txt,chat4.txt
 AUTO_RUN_AI=false
